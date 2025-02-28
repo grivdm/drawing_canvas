@@ -11,9 +11,10 @@ class DrawingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final currentTime = _controller.totalTime;
+
     for (var stroke in _controller.strokes) {
-      final visibleCount =
-          stroke.getVisiblePointCount(5, _controller.fadeDuration);
+      final visibleCount = stroke.getVisiblePointCount(currentTime);
 
       if (visibleCount <= 1) continue;
 
@@ -22,21 +23,24 @@ class DrawingPainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round
         ..style = PaintingStyle.stroke;
 
+      final allPoints = stroke.points;
+
+      final startIndex = allPoints.length - visibleCount;
+
       final path = Path();
-      path.moveTo(stroke.points[0].dx, stroke.points[0].dy);
 
-      for (int i = 1; i < visibleCount; i++) {
-        path.lineTo(stroke.points[i].dx, stroke.points[i].dy);
+      if (startIndex < allPoints.length) {
+        path.moveTo(allPoints[startIndex].dx, allPoints[startIndex].dy);
+
+        for (int i = startIndex + 1; i < allPoints.length; i++) {
+          path.lineTo(allPoints[i].dx, allPoints[i].dy);
+        }
+
+        canvas.drawPath(path, paint);
       }
-
-      canvas.drawPath(path, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant DrawingPainter oldDelegate) =>
-      !identical(oldDelegate._controller, _controller);
-
-  @override
-  bool shouldRebuildSemantics(covariant DrawingPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

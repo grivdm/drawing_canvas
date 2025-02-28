@@ -12,13 +12,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: DrawingCanvas(),
-          ),
-        ],
-      ),
+      body: DrawingCanvas(),
     );
   }
 }
